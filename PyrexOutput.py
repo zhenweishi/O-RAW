@@ -31,9 +31,9 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 	GTV_uri = URIRef('http://www.cancerdata.org/roo/100006')
 
     #-------------------------- URI of units ------------------
-	mm_uri = URIRef('http://purl.obolibrary.org/obo/UO_0000016')
-	mm2_uri = URIRef('http://purl.obolibrary.org/obo/UO_0000082')
-	mm3_uri = URIRef('http://www.radiomics.org/RO/010246')
+	mm_uri = URIRef('http://www.radiomics/org/RO/MilliMeter')
+	mm2_uri = URIRef('http://www.radiomics/org/RO/SquareMillimeter')
+	mm3_uri = URIRef('http://www.radiomics/org/RO/CubicMillimeter')
 	
     # ---------------------- URI of predicates --------------------
 	has_pacs_study = URIRef('www.cancerdata.org/roo/100284') # patient to scan
@@ -57,9 +57,9 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 	
 	#------------------------RDF entities---------------------------------
 	RDF_patid = URIRef(localhost_patient+patientID)
-	RDF_scan = URIRef(localhost_scan)
-	RDF_imagevolume = URIRef(localhost_imagevolume)
-	RDF_imagespace = URIRef(localhost_imagespace)
+	RDF_scan = URIRef(localhost_scan + myStructUID)
+	RDF_imagevolume = URIRef(localhost_imagevolume + myStructUID + '_' + urllib.quote(ROI))
+	RDF_imagespace = URIRef(localhost_imagespace + myStructUID + '_' + urllib.quote(ROI))
 	RDF_GTV = URIRef(localhost_GTV)
 	RDF_mm = URIRef(localhost_mm)
 	RDF_mm2 = URIRef(localhost_mm2)
