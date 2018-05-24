@@ -5,47 +5,118 @@
 """
 
 from rdflib import Graph, Literal
-from rdflib.namespace import Namespace,URIRef
+from rdflib.namespace import Namespace,URIRef,RDF,RDFS
+import urllib
 #import json
 import os
 import csv
 # Function to store readiomics in different types of formats, such as csv and RDF.
-def RadiomicsStore(featureVector,exportDir,CaseID,ROI,export_format,export_name):
-	g = Graph() # Create a rdflib graph object
+def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format,export_name):
+	graph = Graph() # Create a rdflib graph object
 	feature_type = [] # Create a list for feature type
 	feature_uri = [] # Create a list for feature uri (ontology)
-	# Load the radiomics_ontology mapping table
+	software = Literal('pyRadiomics_1.3.0')
+
+	# Adding Radiomics Ontology to namespace
+	ro = Namespace('http://www.radiomics.org/RO/')
+	roo = Namespace('https://www.cancerdata.org/roo/')
+	#graph.bind('ro',ro)
+	#graph.bind('roo',roo)
+
+	# ------------------------- URI of related entities
+	patient_uri = URIRef('http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C16960')
+	scan_uri = URIRef('http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C17999')
+	image_volume_uri = URIRef('http://www.radiomics.org/RO/0271')
+	image_space_uri = URIRef('http://www.radiomics.org/RO/0225')
+	GTV_uri = URIRef('http://www.cancerdata.org/roo/100006')
+
+    #-------------------------- URI of units ------------------
+	mm_uri = URIRef('http://purl.obolibrary.org/obo/UO_0000016')
+	mm2_uri = URIRef('http://purl.obolibrary.org/obo/UO_0000082')
+	mm3_uri = URIRef('http://www.radiomics.org/RO/010246')
+	
+    # ---------------------- URI of predicates --------------------
+	has_pacs_study = URIRef('www.cancerdata.org/roo/100284') # patient to scan
+	converted_to = URIRef('www.radiomics.org/RO/0310') # scan to image volume
+	contains = URIRef('www.radiomics.org/RO/0295') # image space to GTV
+	is_part_of = URIRef('www.radiomics.org/RO/0298') # image splace to 
+	used_to_compute = URIRef('www.radiomics.org/RO/0296') # image space to radiomic feature
+	has_value = URIRef('http://www.radiomics.org/RO/010191')
+	has_unit = URIRef('http://www.radiomics.org/RO/010198')
+	# ----------------------- localhost URIs ---------------------------
+	localhost_patient = 'http://localhost/data/patient_'
+	localhost_scan = 'http://localhost/data/scan_'
+	localhost_imagevolume = 'http://localhost/data/imagevolume_'
+	localhost_imagespace = 'http://localhost/data/imagespace_'
+	localhost_GTV = 'http://localhost/data/GTV_'
+	localhost_feature = 'http://localhost/data/feature_'
+	#-----------------------
+	localhost_mm = 'http://localhost/data/mm'
+	localhost_mm2 = 'http://localhost/data/mm2'
+	localhost_mm3 = 'http://localhost/data/mm3'
+	
+	#------------------------RDF entities---------------------------------
+	RDF_patid = URIRef(localhost_patient+patientID)
+	RDF_scan = URIRef(localhost_scan)
+	RDF_imagevolume = URIRef(localhost_imagevolume)
+	RDF_imagespace = URIRef(localhost_imagespace)
+	RDF_GTV = URIRef(localhost_GTV)
+	RDF_mm = URIRef(localhost_mm)
+	RDF_mm2 = URIRef(localhost_mm2)
+	RDF_mm3 = URIRef(localhost_mm3)
+
+	#-------------------------------------------------------------------
+	# Load the radiomics_ontology mapping table based on Radiomics Ontology
 	pyradiomics_ro = os.path.join(os.getcwd(),'RadiomicsOntology','RadiomicsOntology_Table.csv')
 	with open(pyradiomics_ro,'rb') as mydata:
 		reader = csv.reader(mydata)
 		for row in reader:
 			feature_type.append(row[0])
 			feature_uri.append(row[1])
-    # Adding Radiomics Ontology to namespace
-	ro = Namespace('http://www.radiomics.org/RO/')
-	g.bind('ro',ro)
-
-	CalculationRun = URIRef('http://www.radiomics.org/RO/0101')
-	has_radiomics_feature  = URIRef('http://www.radiomics.org/RO/0102')
-	has_value = URIRef('http://www.radiomics.org/RO/0103')
-	has_unit = URIRef('http://www.radiomics.org/RO/0104')
 	#extract feature keys and values from featureVector that is the output of pyradiomcis
-	radiomics_key = featureVector.keys()
-	radiomics_value = featureVector.values()
-	# A dictionary contains the radiomic feature that has a unit
-	dict_unit = {'original_shape_Volume':'mm^3','original_shape_SurfaceArea': 'mm^2','original_shape_Maximum3DDiameter': 'mm'}
-	
-	# Adding to graph
-	for i in range(len(radiomics_key)):
-		ind = feature_type.index(radiomics_key[i])
-		tmp_uri = feature_uri[ind]
-		tmp_value = Literal(radiomics_value[i])
-		feature_ontology = URIRef(tmp_uri)
-		g.add((CalculationRun,has_radiomics_feature,feature_ontology))
-		g.add((feature_ontology,has_value,tmp_value))
-		# If radiomics have an unit, then add it to the graph.
-		if radiomics_key[i] in dict_unit.keys():
-			tmp_unit = Literal(dict_unit[radiomics_key[i]])
-			g.add((feature_ontology,has_unit,tmp_unit))
+	f_key = featureVector.keys()
+	f_value = featureVector.values()
+	# filter out info output of pyradiomics
+	radiomics_key = f_key[9:]
+	radiomics_value = f_value[9:]
 
-	g.serialize(exportDir + os.sep + export_name + ".ttl", format='turtle')		
+
+	# Adding to graph
+	for i in range(len(radiomics_key)-3):		
+		ind = feature_type.index(radiomics_key[i])
+		tmp_uri = URIRef(feature_uri[ind])
+		tmp_value = Literal(radiomics_value[i])
+		#---------------------------------RDF entity for feature
+		RDF_feature = URIRef(localhost_feature + myStructUID + '_' + urllib.quote(ROI) + '_'  + radiomics_key[i])
+		# start adding
+		# ------------ patient layer ---------------
+		graph.add((RDF_patid,RDF.type,patient_uri))
+		graph.add((RDF_patid,has_pacs_study,RDF_scan))
+		# ------------ scan layer ---------------
+		graph.add((RDF_scan,RDF.type,scan_uri))
+		graph.add((RDF_scan,converted_to,RDF_imagevolume))
+		# ------------ image volume layer ---------------
+		graph.add((RDF_imagevolume,RDF.type,image_volume_uri))
+		graph.add((RDF_imagevolume,is_part_of,RDF_imagespace))
+		# ------------ image space layer ---------------
+		graph.add((RDF_imagespace,RDF.type,image_space_uri))
+		graph.add((RDF_imagespace,contains,RDF_GTV))
+		graph.add((RDF_GTV,RDF.type,GTV_uri))
+		graph.add((RDF_imagespace,used_to_compute,RDF_feature))
+		# ------------ feature layer ---------------
+		graph.add((RDF_feature,RDF.type,tmp_uri))
+		graph.add((RDF_feature,has_value,tmp_value))
+		# add unit to feature, if it has
+		if radiomics_key[i] == 'original_shape_Volume':
+			#tmp_unit = Literal('mm^3')
+			graph.add((RDF_feature,has_unit,RDF_mm3))
+			graph.add((RDF_mm3,RDF.type,mm3_uri))
+		if radiomics_key[i] == 'original_shape_SurfaceArea':
+			#tmp_unit = Literal('mm^2')
+			graph.add((RDF_feature,has_unit,RDF_mm2))
+			graph.add((RDF_mm2,RDF.type,mm2_uri))
+		if radiomics_key[i] == 'original_shape_Maximum3DDiameter':
+			#tmp_unit = Literal('mm')
+			graph.add((RDF_feature,has_unit,RDF_mm))
+			graph.add((RDF_mm,RDF.type,mm_uri))      
+	return graph
