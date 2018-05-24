@@ -13,7 +13,7 @@ Created on Sat Oct 14 16:55:42 2017
 #pip install xnat
 import xnat
 import os
-import dicom
+#import dicom
 import zipfile
 
 #myProjectID = 'stwstrategyrdr' #for RIDER

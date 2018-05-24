@@ -7,8 +7,8 @@ zhenwei.shi, Maastro##
 from __future__ import print_function
 
 import logging
-import os
-import six
+#import os
+#import six
 import radiomics
 from radiomics import featureextractor
 
