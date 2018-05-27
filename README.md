@@ -1,7 +1,5 @@
 ## Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 1.0.1
 
-This is an open-source python package for radiomics analysis. With this pacakge we aim to allow users to use origial DICOM file and RTSTRUCT for radiomics calculation. 
-
 Radiomics is high-throughput automated tumour feature extraction from medical images. This has shown potential for quantifying tumour phenotype and predicting treatment response. The three major challenges  of radiomics research and clinical adoption are: 
 1. lack of standardized methodology for radiomics analyses;
 2. lack of universal lexicon to denote features that are semantically equivalent;
