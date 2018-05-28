@@ -1,0 +1,25 @@
+prefix ro:<http://www.radiomics.org/RO/>
+prefix roo: <http://www.cancerdata.org/roo/>
+prefix ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix icd: <http://purl.bioontology.org/ontology/ICD10/>
+prefix uo: <http://purl.obolibrary.org/obo/UO_>
+prefix sedi: <http://semantic-dicom.org/dcm#>
+prefix seq: <http://semantic-dicom.org/seq#>
+
+SELECT DISTINCT ?patient  ?scan ?imagevolume ?imagespace  ?radiomic_feature ?feature ?feature_value
+
+WHERE {
+      ?patient rdf:type ncit:C16960. 
+      ?patient roo:100284 ?scan.                   # patient has_pacs_scan scan
+      ?scan rdf:type ncit:C17999.                   
+      ?scan ro:0310 ?imagevolume.                  # scan converted_to imagevolume
+      ?imagevolume rdf:type ro:0271.
+      ?imagevolume ro:0298 ?imagespace.            # imagevolume is_part_of imagespace
+
+      ?imagespace ro:0296 ?radiomic_feature.       # imagespace used_to_compute radiomic_feature
+      ?radiomic_feature rdf:type ?feature.
+      ?radiomic_feature ro:010191 ?feature_value.  # radiomic_feature has_value feature_value
+  #    ?radiomic_feature ro:010198 ?feature_unit.
+  #    ?feature_unit rdf:type ?unit.
+  }
