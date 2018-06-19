@@ -14,30 +14,26 @@ import pandas as pd
 from DicomDatabase import DicomDatabase
 
 '''
-Usage for individual case: python HelloPyrexBatchProcessing.py 
+Usage for a given case: python HelloORAW.py 
 
-Read parameter file of Pyrex:
+Read parameters:
 
-# - path:
-#    - myWorkingDirectory is the root directory where DICOM files are saved.
-#    - exportDir is the directory where results are exported.
-# - collectionURL: specify the URL of cloud repository, like 'XNAT'.
-# - myProject: specify the name of dataset on cloud reposity, like 'stwstrategyrdr'
-# - export_format: specify the format of output, such as rdf or csv.
-# - export_name: specify the name of result file.
+roi = 'all' (calculate radiomics on all ROIs)
+roi = '[Gg][Tt][Vv]' (calculate radiomics on a specific ROI or a type of ROI)
+export_format = 'csv'/'rdf'
+export_name = 'ORAW_rtest'
+walk_dir = './data/PET' (directory of your data)
 ######################################
 '''
 start_time = time.clock()
-
-
 #-------------------------USER-------------------------------
 #----------------O-RAW initial parameters -------------------
 roi = 'all'
+#roi = '[Gg][Tt][Vv]'
 export_format = 'csv'
-export_name = 'ORAW_Dockertest'
-#walk_dir = "/data"
+export_name = 'ORAW_rtest'
 walk_dir = './data/PET'
-#walk_dir = './ORAW_TestData-4'
+
 #-----------------create tmp CT/STRUCT directories-----------
 CTWorkingDir = "./CTFolder"
 STRUCTWorkingDir = "./StructFolder"
@@ -73,7 +69,6 @@ for ptid in dicomDb.getPatientIds():
         # Get CT which is referenced by this RTStruct, and is linked to the same patient
         # mind that this can be None, as only a struct, without corresponding CT scan is found
         myCT = myPatient.getCTForRTStruct(myStruct)
-
         # check if the temperal CT/STRUCT folder is empty
         if not (os.listdir(CTWorkingDir)==[] and os.listdir(STRUCTWorkingDir)==[]):
           ct_files = glob.glob(os.path.join(CTWorkingDir,'*'))
@@ -92,7 +87,9 @@ for ptid in dicomDb.getPatientIds():
             slices = myCT.getSlices()
             for i in range(len(slices)):
                 shutil.copy2(slices[i],os.path.join(CTWorkingDir,str(i)+".dcm"))
-            #graph = ORAW_Docker.executeORAWbatch_all([ptid],roi,myStructUID,exportDir,export_format,export_name,[CTWorkingDir],[STRUCTWorkingDir],excludeStructRegex)
-            ORAW.executeORAWbatch_all([ptid],roi,myStructUID,exportDir,export_format,export_name,[CTWorkingDir],[STRUCTWorkingDir],excludeStructRegex)
+            if roi == 'all':
+                ORAW.executeORAWbatch_all([ptid],roi,myStructUID,exportDir,export_format,export_name,[CTWorkingDir],[STRUCTWorkingDir],excludeStructRegex)
+            else:
+                ORAW.executeORAWbatch_roi([ptid],roi,myStructUID,exportDir,export_format,export_name,[CTWorkingDir],[STRUCTWorkingDir],excludeStructRegex)
         print("Done for struct %s of patient %s" % (myStructUID, ptid))
 print("--- %s seconds ---" % (time.clock() - start_time)) 
