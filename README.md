@@ -1,5 +1,7 @@
 ## Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 1.0.1
 
+## The publication of O-RAW is coming soon. Please cite the webpage when you use it in academic research.
+
 Radiomics is high-throughput automated tumour feature extraction from medical images. This has shown potential for quantifying tumour phenotype and predicting treatment response. The three major challenges  of radiomics research and clinical adoption are: 
 1. lack of standardized methodology for radiomics analyses;
 2. lack of universal lexicon to denote features that are semantically equivalent;
