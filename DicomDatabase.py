@@ -30,8 +30,8 @@ class DicomDatabase:
         return self.patient.keys()
     
     def doesPatientExist(self, patientId):
-        return self.patient.has_key(patientId)
-
+        # return self.patient.has_key(patientId)
+        return patientId in self.patient
 class Patient:
     def __init__(self):
         self.ct = dict()
@@ -41,7 +41,7 @@ class Patient:
         modality = dcmHeader[0x8,0x60].value
         sopInstanceUid = dcmHeader[0x8,0x18].value
         seriesInstanceUid = dcmHeader[0x20,0xe].value
-        if(modality == "CT") or (modality == "PT") or (modality == 'MR'):
+        if(modality == "CT") or (modality == "PT") or (modality == "MR"):
             if not (seriesInstanceUid in self.ct):
                 self.ct[seriesInstanceUid] = CT()
             myCT = self.ct[seriesInstanceUid]
@@ -69,9 +69,11 @@ class Patient:
         return self.rtstruct.keys()
     
     def doesCTExist(self, seriesInstanceUid):
-        return self.ct.has_key(seriesInstanceUid)
+        # return self.ct.has_key(seriesInstanceUid)
+        return seriesInstanceUid in self.ct
     def doesRTStructExist(self, sopInstanceUid):
-        return self.rtstruct.has_key(sopInstanceUid)
+        # return self.rtstruct.has_key(sopInstanceUid)
+        return sopInstanceUid in self.rtstruct
     
     def getCTForRTStruct(self, rtStruct):
         if rtStruct.getReferencedCTUID() is not None:
