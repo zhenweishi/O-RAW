@@ -1,6 +1,6 @@
-## Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 1.0.1
+## Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 2.0.1
 
-## The publication of O-RAW is coming soon. Please cite the webpage when you use it in academic research.
+## The publication of O-RAW is coming soon. Please cite the webpage when you use it for academic research.
 
 Radiomics is high-throughput automated tumour feature extraction from medical images. This has shown potential for quantifying tumour phenotype and predicting treatment response. The three major challenges  of radiomics research and clinical adoption are: 
 1. lack of standardized methodology for radiomics analyses;
@@ -31,7 +31,7 @@ O-RAW is still under development. Although we have tested and evaluated the work
 
 O-RAW is dependent on several tools and packages that are listed below.
 
-1. [Anaconda](https://www.anaconda.com/download/) python 2.7 version, which includes python and hundreds of popular data science packages and the conda package and virtual environment manager for Windows, Linux, and MacOS.
+1. [Anaconda](https://www.anaconda.com/download/) python 2 or 3 version, which includes python and hundreds of popular data science packages and the conda package and virtual environment manager for Windows, Linux, and MacOS.
 2. [Pyradiomics](https://github.com/Radiomics/pyradiomics) - radiomic extractor.
 3. [RDFLib](https://github.com/RDFLib/rdflib) - a Python library for working with RDF, a simple powerful language for representing information as graphs.
 
