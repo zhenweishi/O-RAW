@@ -30,12 +30,12 @@ start_time = time.clock()
 
 #-------------------------USER-------------------------------
 #----------------O-RAW initial parameters -------------------
-# roi = 'all'
-roi = '[Gg][Tt][Vv]'
+roi = 'all'
+# roi = '[Gg][Tt][Vv]'
 export_format = 'csv'
 export_name = 'ORAW'
 # walk_dir = "./data/PET"
-walk_dir = './data/HN-CHUM-001'
+walk_dir = './data/CT'
 #-----------------create tmp CT/STRUCT directories-----------
 CTWorkingDir = "./CTFolder"
 STRUCTWorkingDir = "./StructFolder"
