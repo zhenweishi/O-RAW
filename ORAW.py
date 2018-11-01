@@ -16,7 +16,7 @@ import PyrexReader
 import PyrexWithParams
 import PyrexOutput
 import yaml
-from PyrexXNAT import ParseStructure, xnat_collection
+# from PyrexXNAT import ParseStructure, xnat_collection
 import logging
 import os
 import pandas
