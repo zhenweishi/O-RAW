@@ -7,7 +7,6 @@
 from rdflib import Graph, Literal
 from rdflib.namespace import Namespace,URIRef,RDF,RDFS
 import urllib
-#import json
 import os
 import csv
 from datetime import datetime
@@ -31,7 +30,6 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 	graph.bind('IAO',IAO)
 	graph.bind('SWO',SWO)
 	graph.bind('NCIT',NCIT)
-
 	# ------------------------- URI of related entities -----------------
 	# ^^^^^^^^^^^^^^^^^^^^^^^^^ Level-1 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	patient_uri = URIRef(NCIT+'C16960')
@@ -68,7 +66,7 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 	# version_uri = URIRef(ro + '010166')
 
 	# ^^^^^^^^^^^^^^^^^^^^^^^^^ Level-4 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	featureparameterspace_uri = URIRef(roo + '0213')
+	featureparameterspace_uri = URIRef(ro + '001000')
 	defined_by = URIRef(ro + 'P000009') # featureparameterspace defined_by settings
 
 	# filterproperties_uri = URIRef(roo + '0255') # has_value wavelet right/not?
@@ -102,22 +100,27 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 	RDF_mm3 = URIRef(localhost_mm3)
 	# --------------------
 	RDF_python = Literal('Python')
-	RDF_softwareversion = Literal('PyRadiomics_' + featureVector['general_info_Version'])
-	RDF_featureparameter = Literal(featureVector['general_info_GeneralSettings'])
-	RDF_ROItype = Literal(ROI)
-	RDF_Datetime = Literal(datetime.now().strftime("%Y-%m-%d"))
+	RDF_softwareversion = Literal('PyRadiomics_' + featureVector['diagnostics_Versions_PyRadiomics']) # version of pyradiomics
+	RDF_ROItype = Literal(ROI) # ROI
+	RDF_Datetime = Literal(datetime.now().strftime("%Y-%m-%d")) # run at_date_time
+	# -------------------- feature parameters -----------------
+	RDF_featureparameter = Literal(featureVector['diagnostics_Configuration_Settings'])
+	# For further use, split diagnostics_Configuration_Settings, but not now
+	# RDF_resampledPixelSpacing = Literal(featureVector['diagnostics_Configuration_Settings']['resampledPixelSpacing'])
+	# RDF_interpolator = Literal(featureVector['diagnostics_Configuration_Settings']['interpolator'])
+	# RDF_resegmentRange = Literal(featureVector['diagnostics_Configuration_Settings']['resegmentRange'])
+
 	#----------------------------------------------------------------
 	# Load Radiomics Ontology table
 	df_RO = pd.read_csv(os.path.join(os.getcwd(),'RadiomicsOntology','ORAW_RO_Table.csv'))
 	#extract feature keys and values from featureVector cumputed by pyradiomcis
-	f_key = featureVector.keys()
-	f_value = featureVector.values()
-	# info_setting, We call it FeatureParameters in Radiomics Ontology, which is used to compute radiomic feature. 
+	f_key = list(featureVector.keys())
+	f_value = list(featureVector.values())
 
 	# # remove columns with general info from pyradiomics results
 	f_index = []
 	for i in range(len(f_key)):
-		if 'general' not in f_key[i]: # filter out 'general_info' from featureVector
+		if 'diagnostics' not in f_key[i]: # filter out 'general_info' from featureVector
 			f_index.append(i)
 	radiomics_key =  []
 	radiomics_value = []
@@ -125,13 +128,32 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 		radiomics_key.append(f_key[j])
 		radiomics_value.append(f_value[j])
 
-	# Adding elements to graph
+	# # Adding elements to graph
 	for i in range(len(radiomics_key)-3): # -3 means filter out patientid, RTid, and countour
-		ind = pd.Index(df_RO.iloc[:,0]).get_loc(radiomics_key[i])
+
+	# # ---------------------- do text match ------------
+		if 'log' in radiomics_key[i]:
+			radiomics_feature = radiomics_key[i][20:]
+			radiomics_imagetype = radiomics_key[i][0:19]
+			radiomics_binwidth = featureVector['diagnostics_Configuration_EnabledImageTypes']['LoG']['binWidth']
+		elif 'wavelet' in radiomics_key[i]:
+			radiomics_feature = radiomics_key[i][12:]
+			radiomics_imagetype = radiomics_key[i][0:11]
+			radiomics_binwidth = featureVector['diagnostics_Configuration_EnabledImageTypes']['Wavelet']['binWidth']
+		else:
+			radiomics_feature = radiomics_key[i][9:]
+			radiomics_imagetype = radiomics_key[i][0:8]
+			radiomics_binwidth = featureVector['diagnostics_Configuration_EnabledImageTypes']['Original']['binWidth']
+		## --------------------------------------------------
+		ind = pd.Index(df_RO.iloc[:,0]).get_loc(radiomics_feature)
 		tmp_uri = URIRef(df_RO.iloc[:,1][ind])
 		tmp_value = Literal(radiomics_value[i])
 		#---------------------------------RDF entity for feature
 		RDF_feature = URIRef(localhost_feature + myStructUID + '_' + urllib.quote(ROI) + '_'  + radiomics_key[i])
+		RDF_imagetype = Literal(radiomics_imagetype)
+		RDF_binwidth = Literal('binwidth: ' + str(radiomics_binwidth))
+		RDF_featureparameterspace = URIRef(featureparameterspace_uri + '_'  + radiomics_key[i])
+		# ----------------------------------------------------
 		# start adding
 		# ------------ patient layer ---------------
 		graph.add((RDF_patid,RDF.type,patient_uri))
@@ -160,11 +182,12 @@ def RadiomicsRDF(featureVector,exportDir,patientID,myStructUID,ROI,export_format
 		# graph.add((datetime_uri,has_value,Literal(str(datetime.now()))))
 		graph.add((softwareproperties_uri,has_programming_language,RDF_python))
 		graph.add((softwareproperties_uri,has_version,RDF_softwareversion))
-		# %%%%%%%%%%%%%%%%%%%%%%
+
 		# ------------feature parameter layer----------
-		graph.add((RDF_feature,computed_using,featureparameterspace_uri))
-		graph.add((featureparameterspace_uri,defined_by,RDF_featureparameter))
-		#--------------------------------------------------------------
+		graph.add((RDF_feature,computed_using,RDF_featureparameterspace))
+		graph.add((RDF_featureparameterspace,defined_by,RDF_featureparameter))
+		graph.add((RDF_featureparameterspace,defined_by,RDF_imagetype))
+		graph.add((RDF_featureparameterspace,defined_by,RDF_binwidth))
 
 		# ----------- add unit to feature, if it has ------------------
 		if radiomics_key[i] == 'original_shape_Volume':
