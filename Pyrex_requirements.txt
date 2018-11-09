@@ -11,5 +11,5 @@ sphinx>=1.4
 
 rdflib>=4.2.2
 scikit-image>=0.12.3
-pydicom>=0.9.9
+pydicom>=1.0.2
 xnat>=0.2.2

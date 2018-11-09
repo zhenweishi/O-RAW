@@ -9,7 +9,7 @@ class DicomDatabase:
         for root, subdirs, files in os.walk(folderPath):
             for filename in files:
                 file_path = os.path.join(root, filename)
-                if(file_path.endswith(".dcm")):
+                if(file_path.endswith(".dcm") or file_path.endswith(".DCM")):
                     dcmHeader = pydicom.dcmread(file_path)
                     patientId = dcmHeader[0x10,0x20].value
                     patient = self.getOrCreatePatient(patientId)
