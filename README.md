@@ -1,3 +1,5 @@
+# *** O-RAW package has been moved to [GitLab O-RAW](https://gitlab.com/UM-CDS/o-raw/) ***
+
 # Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 2.1
 
 ## This repository accompanies the publication 'Technical Note: Ontology-guided Radiomics Analysis Workflow (O-RAW)'
