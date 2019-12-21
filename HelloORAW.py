@@ -35,7 +35,7 @@ roi = '[Gg][Tt][Vv]'
 export_format = 'csv'
 # export_format = 'rdf'
 export_name = 'ORAW_'
-walk_dir = './data/BMS'
+walk_dir = './data/CT'
 #-----------------create tmp CT/STRUCT directories-----------
 CTWorkingDir = "./CTFolder"
 STRUCTWorkingDir = "./StructFolder"
