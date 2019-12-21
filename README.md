@@ -1,9 +1,5 @@
-# *** O-RAW package has been moved to [GitLab O-RAW](https://gitlab.com/UM-CDS/o-raw/) ***
+# Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 2.2
 
-# Ontology-guided Radiomics Analysis Workflow (O-RAW) verison 2.1
-
-## This repository accompanies the publication 'Technical Note: Ontology-guided Radiomics Analysis Workflow (O-RAW)'
-## The publication of O-RAW is coming soon. Please cite the webpage when you use it for academic research.
 
 Radiomics is high-throughput automated tumour feature extraction from medical images. This has shown potential for quantifying tumour phenotype and predicting treatment response. The three major challenges  of radiomics research and clinical adoption are: 
 1. lack of standardized methodology for radiomics analyses;
@@ -13,6 +9,10 @@ Radiomics is high-throughput automated tumour feature extraction from medical im
 We propose an open-source Ontology-guided Radiomics Analysis Workflow (O-RAW) to address the above challenges in the following manner: (i) distributing a free and open-source software package for radiomics analysis, (ii) deploying a standard lexicon to uniquely describe features in common usage and (iii) provide methods to publish radiomic features as a semantically-interoperable data graph object complying to FAIR (Findable Accessible Interoperable Reusable) data principles. 
 
 ![radiomics_workflow chart](https://user-images.githubusercontent.com/17007301/49441973-5cf6d400-f7c8-11e8-80d7-9b6c8e02777d.png)
+
+## This repository accompanies the publication 'Technical Note: Ontology-guided Radiomics Analysis Workflow (O-RAW)'
+**If you publish any work which uses this package, please cite the following publication:**
+*Shi, Zhenwei, Alberto Traverso, Johan van Soest, Andre Dekker, and Leonard Wee. "Ontology‐guided Radiomics Analysis Workflow (O‐RAW)." Medical Physics (2019). https://aapm.onlinelibrary.wiley.com/doi/pdf/10.1002/mp.13844*
 
 
 ## Disclaimer
@@ -45,17 +45,18 @@ O-RAW is dependent on several tools and packages that are listed below.
 
 1. Install Anaconda and add path the system environment.
 2. Install the lastest Pyradiomics. More instruction, see [here](https://github.com/Radiomics/pyradiomics)
-2. Clone/Download O-RAW to the sub-directory of Pyradiomics
-3. Execute: `python -m pip install -r pyrex_requirements.txt` under command line to make sure you first install the required packages. 
+2. Clone/Download O-RAW to local directory, and go to the O-RAW working directory.
+3. Execute: `python -m pip install -r pyrex_requirements.txt` under command line to install the required packages. 
 
 		
 ## Getting Started
-We provide a test dataset in `./data`. This dataset has a series of CT, PET & MRI scans with RTSTRUCT. Change configuration file "./pyradiomics-master/Py-rex-master/ParamsSettings/Pyradiomics_Params.yaml"
+We provide a test dataset in `./data`. This dataset has a series of CT, PET & MRI scans with RTSTRUCT. The configuration file for test "./pyradiomics-master/Py-rex-master/ParamsSettings/Pyradiomics_Params.yaml"
 
 Execute:
 ```
 python ./HelloORAW.py
 ```
+Or try ./Notebook/O-RAW-notebook.ipynb
 
 Results in `./RFstore`
 

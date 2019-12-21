@@ -1,0 +1,22 @@
+PREFIX ncit:<http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
+PREFIX roo: <http://www.cancerdata.org/roo/>
+PREFIX ro: <http://www.radiomics.org/RO/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?patient  ?ROItype ?SegmentationMethod ?radiomicfeatures ?featureuri 
+?featurevalue
+WHERE {  
+	?patient a ncit:C16960 .
+  	?patient roo:100284 ?scan .
+  	?scan ro:0310 ?imagevolume .
+
+	?imagevolume ro:0298 ?imagespace .
+	?imagespace ro:0296 ?radiomicfeatures .
+  	?ROI ro:0298 ?imagespace .
+  	?ROI ro:P00051 ?ROItype .
+  	?ROI ro:P00092 ?SegmentationMethod .
+
+  	?radiomicfeatures rdf:type ?featureuri .
+  	?radiomicfeatures ro:010191 ?featurevalue .
+  
+}

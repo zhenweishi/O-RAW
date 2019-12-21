@@ -1,0 +1,41 @@
+# #############################  O-RAW template ######################################
+
+O-RAW_config:
+  export_format: RDF
+  export_name: ORAW_RDF
+General:
+  ImageAcquisition:
+    ImagingModality: CT
+  VolumetricAnalysis: None
+  WorkflowStructure: None
+  Software:
+    name: PyRadiomics
+    version: 2.1.2
+    programminglanguage: Python
+ImageProcessing:
+  Conversion: Original
+  Processing:
+    resampledPixelSpacing: [2,2,2]
+ROISegmentation:
+  SegmentationMethod: Manual
+  ROIType: GTVp
+Interpolation:
+  VoxelDimensions: [0.9765625,0.9765625,3.0]
+      # DimensionX: 0.9765625
+      # DimensionY: 0.9765625
+      # DimensionZ: 3.0 # may be split it into x, y, z. also for original and ROI mask.
+  ImageInterplationMethod: sitkBSpline
+  IntensityRounding: None # not sure
+  ROIInterplationMethod: polygon # ?? linear?
+  ROIPartialVolume: None
+ROIResegmentation:  #RDF_featureparameter
+  ResegmentRange: [-3, 3]
+  ResegmentMode: sigma
+# ImageDiscretization: #RDF_featureparameter
+#   DiscretizationMethod: binWidth
+#   DiscretizationParameters: 25
+FeatureCalculation:
+  FeatureParameter:
+    # ImageFilterSpace: [Wavelet,LoG]
+    ImageFilterSpace: [Original,Wavelet]
+    DiscretizationMethod: ['binWidth:25','binWidth:5']

@@ -1,0 +1,10 @@
+INFO:radiomics.batch: pyradiomics version: 2.2.0
+INFO:radiomics.batch: Reading Params file for pyradiomics
+INFO:radiomics.batch: Parsing DICOM files and RTSTRUCT in working directory
+INFO:radiomics.batch: DICOM and RTSTRUCT Parsing Done
+INFO:radiomics.batch: Starting Pyrex
+INFO:radiomics.batch: Loading RTSTRUCT: ./StructFolder
+INFO:radiomics.batch: ROI: ['BODY', 'Lung_L', 'Lung_R', 'Lungs']
+INFO:radiomics.batch: Extraction complete, writing CSV
+INFO:radiomics.batch: CSV writing complete
+INFO:radiomics.batch: %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
