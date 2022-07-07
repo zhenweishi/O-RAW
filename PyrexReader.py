@@ -102,7 +102,9 @@ def Img_Bimask(img_path,rtstruct_path,ROI_name): # generating image array and bi
 
     ROI_id = match_ROIid(rtstruct_path,ROI_name)
     #Check DICOM file Modality
-    if IM.Modality == 'CT' or 'PT':
+
+    # Check for the modalities 'CT', or 'PET'
+    if IM.Modality == 'CT' or IM.Modality == 'PT':
         for k in range(len(M.ROIContourSequence[ROI_id].ContourSequence)):
             Cpostion_rt = M.ROIContourSequence[ROI_id].ContourSequence[k].ContourData[2]
             for i in range(num_slice):
@@ -140,6 +142,7 @@ def Img_Bimask(img_path,rtstruct_path,ROI_name): # generating image array and bi
             m_inv=np.linalg.inv(m)
             pts = (np.matmul((m_inv),(pts[:,[a,b]]).T)).T
             mask[sliceOK,:,:] = np.logical_or(mask[sliceOK,:,:],poly2mask(pts[:,0],pts[:,1],[IM_P.shape[1],IM_P.shape[2]]))
+
     elif IM.Modality == 'MR':
         slice_0 = img_vol[0]
         slice_n = img_vol[-1]
